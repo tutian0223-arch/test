@@ -1,0 +1,338 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="登录页面">
+    <title>登录 - 优化版</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .container {
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.1);
+            padding: 40px;
+            width: 100%;
+            max-width: 420px;
+            animation: fadeInUp 0.5s ease-out;
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        h2 {
+            margin-bottom: 30px;
+            color: #333;
+            font-size: 28px;
+            text-align: center;
+            font-weight: 600;
+        }
+
+        .input-group {
+            margin-bottom: 20px;
+        }
+
+        .input-group label {
+            display: block;
+            margin-bottom: 8px;
+            color: #555;
+            font-weight: 500;
+            font-size: 14px;
+        }
+
+        .input-group input {
+            width: 100%;
+            padding: 14px 16px;
+            border: 2px solid #e2e8f0;
+            border-radius: 8px;
+            font-size: 15px;
+            transition: all 0.3s ease;
+            background: #f8f9fa;
+        }
+
+        .input-group input:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.1);
+            transform: scale(1.02);
+        }
+
+        .input-group input:valid {
+            border-color: #48bb78;
+        }
+
+        .input-group input:invalid:not(:placeholder-shown) {
+            border-color: #e53e3e;
+        }
+
+        .password-wrapper {
+            position: relative;
+        }
+
+        .toggle-password {
+            position: absolute;
+            right: 12px;
+            top: 50%;
+            transform: translateY(-50%);
+            cursor: pointer;
+            background: none;
+            border: none;
+            font-size: 18px;
+            color: #666;
+            padding: 8px;
+        }
+
+        .toggle-password:hover {
+            color: #333;
+        }
+
+        .input-hint {
+            font-size: 12px;
+            color: #666;
+            margin-top: 5px;
+        }
+
+        .btn {
+            width: 100%;
+            padding: 15px;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .btn::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 0;
+            height: 0;
+            border-radius: 50%;
+            background: rgba(255,255,255,0.5);
+            transition: all 0.5s ease;
+        }
+
+        .btn:hover::before {
+            width: 300px;
+            height: 300px;
+        }
+
+        .btn:active {
+            transform: scale(0.98);
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.3);
+        }
+
+        .btn-loading {
+            opacity: 0.7;
+            pointer-events: none;
+        }
+
+        .loading-spinner {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid rgba(255,255,255,0.3);
+            border-radius: 50%;
+            border-top-color: transparent;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .toggle-link {
+            text-align: center;
+            margin-top: 25px;
+        }
+
+        .toggle-link a {
+            color: #667eea;
+            text-decoration: none;
+            font-size: 14px;
+            transition: color 0.3s;
+        }
+
+        .toggle-link a:hover {
+            color: #764ba2;
+            text-decoration: underline;
+        }
+
+        .form-footer {
+            text-align: center;
+            margin-top: 20px;
+            padding-top: 20px;
+            border-top: 1px solid #e5e7eb;
+        }
+
+        .form-footer p {
+            color: #666;
+            font-size: 13px;
+            margin: 5px 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2>欢迎回来</h2>
+        <form id="loginForm" novalidate>
+            <div class="input-group">
+                <label for="loginEmail">邮箱地址</label>
+                <input 
+                    type="email" 
+                    id="loginEmail" 
+                    placeholder="your@email.com" 
+                    required
+                    autocomplete="email"
+                    pattern="[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}$">
+            </div>
+            <div class="input-group">
+                <label for="loginPassword">密码</label>
+                <div class="password-wrapper">
+                    <input 
+                        type="password" 
+                        id="loginPassword" 
+                        placeholder="请输入密码" 
+                        required
+                        autocomplete="current-password"
+                        minlength="6">
+                    <button type="button" class="toggle-password" onclick="togglePasswordVisibility()" aria-label="显示/隐藏密码">
+                        👁
+                    </button>
+                </div>
+                <p class="input-hint">密码至少 6 个字符</p>
+            </div>
+            <button type="submit" class="btn btn-primary" id="submitBtn">
+                <span id="btnText">登录</span>
+            </button>
+        </form>
+        <p class="toggle-link">
+            还没有账号？<a href="register.html">立即注册</a>
+        </p>
+        <div class="form-footer">
+            <p>安全提示：请妥善保管您的账号信息</p>
+            <p>© 2026 Tutian0223. 保留所有权利。</p>
+        </div>
+    </div>
+
+    <script>
+        function togglePasswordVisibility() {
+            const passwordInput = document.getElementById('loginPassword');
+            const toggleBtn = document.querySelector('.toggle-password');
+            
+            if (passwordInput.type === 'password') {
+                passwordInput.type = 'text';
+                toggleBtn.textContent = '🙈';
+            } else {
+                passwordInput.type = 'password';
+                toggleBtn.textContent = '👁';
+            }
+        }
+
+        // 表单验证
+        const form = document.getElementById('loginForm');
+        const emailInput = document.getElementById('loginEmail');
+        const passwordInput = document.getElementById('loginPassword');
+        const submitBtn = document.getElementById('submitBtn');
+        const btnText = document.getElementById('btnText');
+
+        form.addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            // 验证邮箱格式
+            const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+            if (!emailRegex.test(emailInput.value)) {
+                showError('请输入有效的邮箱地址');
+                emailInput.focus();
+                return;
+            }
+            
+            // 验证密码长度
+            if (passwordInput.value.length < 6) {
+                showError('密码至少需要 6 个字符');
+                passwordInput.focus();
+                return;
+            }
+            
+            // 显示加载状态
+            showLoading();
+            
+            // 模拟提交（实际项目需要后端支持）
+            setTimeout(() => {
+                hideLoading();
+                alert('登录成功！\\n\\n（演示模式：实际项目需要对接后端 API）');
+                form.reset();
+            }, 1500);
+        });
+
+        function showError(message) {
+            alert('❌ ' + message);
+        }
+
+        function showLoading() {
+            btnText.innerHTML = '<span class="loading-spinner"></span>';
+            submitBtn.classList.add('btn-loading');
+        }
+
+        function hideLoading() {
+            btnText.textContent = '登录';
+            submitBtn.classList.remove('btn-loading');
+        }
+
+        // 实时验证
+        emailInput.addEventListener('input', function() {
+            if (emailInput.validity.patternMismatch) {
+                emailInput.style.borderColor = '#e53e3e';
+            } else {
+                emailInput.style.borderColor = '#48bb78';
+            }
+        });
+
+        passwordInput.addEventListener('input', function() {
+            if (passwordInput.value.length >= 6) {
+                passwordInput.style.borderColor = '#48bb78';
+            } else {
+                passwordInput.style.borderColor = '#e53e3e';
+            }
+        });
+    </script>
+</body>
+</html>
